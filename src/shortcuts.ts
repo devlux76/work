@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export class ShortcutManager {
-  private app: any;
+import type { AppInterface } from './types.js';
 
-  constructor(app: any) {
+export class ShortcutManager {
+  private readonly app: AppInterface;
+
+  constructor(app: AppInterface) {
     this.app = app;
     this.register();
   }

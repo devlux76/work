@@ -5,9 +5,9 @@ import { MenuBar } from './menu.js';
 import { ShortcutManager } from './shortcuts.js';
 import { DialogManager } from './dialogs.js';
 import { renderMarkdown, initMermaid, runMermaid } from './renderer.js';
-import type { AppState, Document } from './types.js';
+import type { AppState, AppInterface, Document } from './types.js';
 
-class App {
+class App implements AppInterface {
   state: AppState = {
     currentDocId: null,
     mode: 'split',
@@ -409,50 +409,69 @@ class App {
     const listEl = document.getElementById('document-list')!;
     const docs = await this.storage.listDocuments();
 
+    const frag = document.createDocumentFragment();
+
     if (docs.length === 0) {
-      listEl.innerHTML = '<div class="doc-list-empty">No documents yet</div>';
-      return;
+      const empty = document.createElement('div');
+      empty.className = 'doc-list-empty';
+      empty.textContent = 'No documents yet';
+      frag.appendChild(empty);
+    } else {
+      for (const doc of docs) {
+        const item = document.createElement('div');
+        item.className = 'doc-list-item' + (doc.id === this.state.currentDocId ? ' active' : '');
+        item.dataset['id'] = doc.id;
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'doc-list-name';
+        nameEl.textContent = doc.name; // textContent is XSS-safe — no escHtml needed
+
+        const dateEl = document.createElement('div');
+        dateEl.className = 'doc-list-date';
+        dateEl.textContent = this.formatDate(doc.modified);
+
+        item.append(nameEl, dateEl);
+
+        item.addEventListener('click', () => this.openDocument(doc.id).catch(console.error));
+        item.addEventListener('contextmenu', (e: Event) => {
+          e.preventDefault();
+          this.showDocContextMenu(e as MouseEvent, doc.id);
+        });
+
+        frag.appendChild(item);
+      }
     }
 
-    listEl.innerHTML = docs.map(doc => `
-      <div class="doc-list-item ${doc.id === this.state.currentDocId ? 'active' : ''}" data-id="${doc.id}">
-        <div class="doc-list-name">${this.escHtml(doc.name)}</div>
-        <div class="doc-list-date">${this.formatDate(doc.modified)}</div>
-      </div>
-    `).join('');
-
-    listEl.querySelectorAll('.doc-list-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const id = (item as HTMLElement).dataset['id']!;
-        this.openDocument(id).catch(console.error);
-      });
-
-      item.addEventListener('contextmenu', (e: Event) => {
-        e.preventDefault();
-        const id = (item as HTMLElement).dataset['id']!;
-        this.showDocContextMenu(e as MouseEvent, id);
-      });
-    });
+    // Replace all children in a single DOM operation
+    listEl.replaceChildren(frag);
   }
 
   private showDocContextMenu(e: MouseEvent, id: string): void {
-    const existing = document.querySelector('.context-menu');
-    existing?.remove();
+    document.querySelector('.context-menu')?.remove();
 
     const menu = document.createElement('div');
     menu.className = 'context-menu';
     menu.style.left = `${e.clientX}px`;
-    menu.style.top = `${e.clientY}px`;
-    menu.innerHTML = `
-      <button data-action="open">Open</button>
-      <button data-action="rename">Rename</button>
-      <button data-action="delete" class="danger">Delete</button>
-    `;
+    menu.style.top  = `${e.clientY}px`;
+
+    const actions: Array<{ action: string; label: string; danger?: boolean }> = [
+      { action: 'open',   label: 'Open' },
+      { action: 'rename', label: 'Rename' },
+      { action: 'delete', label: 'Delete', danger: true },
+    ];
+
+    for (const { action, label, danger } of actions) {
+      const btn = document.createElement('button');
+      btn.dataset['action'] = action;
+      btn.textContent = label;
+      if (danger) btn.className = 'danger';
+      menu.appendChild(btn);
+    }
 
     menu.addEventListener('click', async (ev: MouseEvent) => {
       const action = (ev.target as HTMLElement).dataset['action'];
       menu.remove();
-      if (action === 'open') await this.openDocument(id);
+      if (action === 'open')   await this.openDocument(id);
       if (action === 'rename') await this.renameDocument(id);
       if (action === 'delete') await this.deleteDocument(id);
     });
@@ -488,52 +507,88 @@ class App {
 
   showWelcome(): void {
     const previewContent = document.getElementById('preview-content')!;
-    const editorPane = document.getElementById('editor-pane')!;
-    const paneDivider = document.getElementById('pane-divider')!;
-    editorPane.style.display = 'none';
+    const editorPane    = document.getElementById('editor-pane')!;
+    const paneDivider   = document.getElementById('pane-divider')!;
+    editorPane.style.display  = 'none';
     paneDivider.style.display = 'none';
     document.getElementById('doc-title')!.textContent = 'Welcome';
 
-    previewContent.innerHTML = `
-      <div class="welcome-screen">
-        <div class="welcome-logo">W</div>
-        <h1 class="welcome-title">Word</h1>
-        <p class="welcome-subtitle">A modern markdown word processor</p>
-        <div class="welcome-actions">
-          <button class="welcome-btn primary" id="welcome-new">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            New Document
-          </button>
-          <button class="welcome-btn" id="welcome-open">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            Open Document
-          </button>
-        </div>
-        <div class="welcome-features">
-          <div class="welcome-feature">
-            <strong>Markdown</strong> — Full GFM support with live preview
-          </div>
-          <div class="welcome-feature">
-            <strong>LaTeX Math</strong> — Inline $math$ and block $$math$$ via KaTeX
-          </div>
-          <div class="welcome-feature">
-            <strong>Diagrams</strong> — Mermaid diagram support
-          </div>
-          <div class="welcome-feature">
-            <strong>Offline</strong> — Works without internet via service worker
-          </div>
-        </div>
-        <div class="welcome-shortcuts">
-          <span><kbd>Ctrl+N</kbd> New</span>
-          <span><kbd>Ctrl+S</kbd> Save</span>
-          <span><kbd>Ctrl+B</kbd> Bold</span>
-          <span><kbd>Ctrl+I</kbd> Italic</span>
-        </div>
-      </div>
-    `;
+    // Build the welcome screen with DocumentFragment + createElement
+    const frag   = document.createDocumentFragment();
+    const screen = document.createElement('div');
+    screen.className = 'welcome-screen';
 
-    document.getElementById('welcome-new')?.addEventListener('click', () => this.newDocument());
-    document.getElementById('welcome-open')?.addEventListener('click', () => this.openDocumentDialog());
+    const logo = document.createElement('div');
+    logo.className = 'welcome-logo';
+    logo.textContent = 'W';
+
+    const h1 = document.createElement('h1');
+    h1.className = 'welcome-title';
+    h1.textContent = 'Word';
+
+    const subtitle = document.createElement('p');
+    subtitle.className = 'welcome-subtitle';
+    subtitle.textContent = 'A modern markdown word processor';
+
+    // Action buttons — use template elements to parse SVG strings into real DOM nodes
+    const actionsEl = document.createElement('div');
+    actionsEl.className = 'welcome-actions';
+
+    const newBtn  = this.makeBtnWithIcon(
+      'welcome-btn primary',
+      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+      'New Document',
+    );
+    newBtn.addEventListener('click', () => this.newDocument());
+
+    const openBtn = this.makeBtnWithIcon(
+      'welcome-btn',
+      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
+      'Open Document',
+    );
+    openBtn.addEventListener('click', () => this.openDocumentDialog());
+
+    actionsEl.append(newBtn, openBtn);
+
+    // Feature list
+    const featuresEl = document.createElement('div');
+    featuresEl.className = 'welcome-features';
+    const featureData: Array<[string, string]> = [
+      ['Markdown',    'Full GFM support with live preview'],
+      ['LaTeX Math',  'Inline $math$ and block $$math$$ via KaTeX'],
+      ['Diagrams',    'Mermaid diagram support'],
+      ['Offline',     'Works without internet via service worker'],
+    ];
+    for (const [title, desc] of featureData) {
+      const feat   = document.createElement('div');
+      feat.className = 'welcome-feature';
+      const strong = document.createElement('strong');
+      strong.textContent = title;
+      feat.appendChild(strong);
+      feat.appendChild(document.createTextNode(` — ${desc}`));
+      featuresEl.appendChild(feat);
+    }
+
+    // Shortcut hints
+    const shortcutsEl = document.createElement('div');
+    shortcutsEl.className = 'welcome-shortcuts';
+    const shortcutData: Array<[string, string]> = [
+      ['Ctrl+N', 'New'], ['Ctrl+S', 'Save'], ['Ctrl+B', 'Bold'], ['Ctrl+I', 'Italic'],
+    ];
+    for (const [key, label] of shortcutData) {
+      const span = document.createElement('span');
+      const kbd  = document.createElement('kbd');
+      kbd.textContent = key;
+      span.appendChild(kbd);
+      span.appendChild(document.createTextNode(` ${label}`));
+      shortcutsEl.appendChild(span);
+    }
+
+    screen.append(logo, h1, subtitle, actionsEl, featuresEl, shortcutsEl);
+    frag.appendChild(screen);
+
+    // Replace all children in one operation
+    previewContent.replaceChildren(frag);
   }
 
   updateStatusBar(): void {
@@ -569,8 +624,15 @@ class App {
     return new Date(ts).toLocaleDateString();
   }
 
-  private escHtml(str: string): string {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  /** Create a <button> containing a parsed SVG icon and a text label. */
+  private makeBtnWithIcon(className: string, svgString: string, label: string): HTMLButtonElement {
+    const btn = document.createElement('button');
+    btn.className = className;
+    const tmpl = document.createElement('template');
+    tmpl.innerHTML = svgString;
+    btn.appendChild(tmpl.content.cloneNode(true));
+    btn.appendChild(document.createTextNode(` ${label}`));
+    return btn;
   }
 }
 
