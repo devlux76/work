@@ -331,7 +331,15 @@ class App {
 
   clearFormatting(): void {
     const sel = this.editor?.getSelection() ?? '';
-    const clean = sel.replace(/[*_~`]/g, '').replace(/<[^>]+>/g, '');
+    // Strip markdown syntax and HTML tags thoroughly
+    let clean = sel.replace(/[*_~`]/g, '');
+    // Iteratively strip tags until none remain, then strip any residual angle brackets
+    let prev = '';
+    while (prev !== clean) {
+      prev = clean;
+      clean = clean.replace(/<[^>]*>/g, '');
+    }
+    clean = clean.replace(/[<>]/g, '');
     if (clean) this.editor?.insertAtCursor(clean);
   }
 
