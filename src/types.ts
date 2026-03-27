@@ -22,11 +22,25 @@ export interface ToolbarAction {
   action: () => void;
 }
 
+/**
+ * Minimal dialog manager shape exposed through AppInterface.
+ * Kept here to avoid importing the full DialogManager and creating a circular dependency.
+ */
+export interface DialogManagerLike {
+  insertLinkDialog(): Promise<void>;
+  insertImageDialog(): Promise<void>;
+  insertTableDialog(): Promise<void>;
+  openDocumentDialog(): Promise<void>;
+  showFind(): void;
+  showFindReplace(): void;
+  showWordCount(): void;
+  editDocumentCSS(): void;
+}
+
 /** Typed contract for the App class exposed to Toolbar, MenuBar, ShortcutManager. */
 export interface AppInterface {
   readonly state: AppState;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly dialogs: any; // DialogManager — avoids circular import
+  readonly dialogs: DialogManagerLike; // DialogManager — avoids circular import
   editor: {
     undo(): void;
     redo(): void;
