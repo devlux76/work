@@ -242,9 +242,10 @@ export class MenuBar {
       const actionEl = target.closest('[data-action]') as HTMLElement | null;
       const menuItem = target.closest('.menu-item') as HTMLElement | null;
 
-      if (actionEl?.dataset['action']) {
+      const action = actionEl?.dataset['action'];
+      if (action) {
         this.close();
-        this.handleAction(actionEl.dataset['action']);
+        this.handleAction(action);
         return;
       }
 
