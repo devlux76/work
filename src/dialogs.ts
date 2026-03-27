@@ -232,6 +232,39 @@ export class DialogManager {
     ]);
   }
 
+  showSettingsDialog(onSave: (settings: { autosaveInterval: number }) => void, currentAutosave = 30): void {
+    const content = document.createElement('div');
+
+    const fieldset = document.createElement('div');
+    fieldset.className = 'dialog-field';
+
+    const label = document.createElement('label');
+    label.setAttribute('for', 'autosave-interval');
+    label.textContent = 'Auto-save interval (seconds)';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = 'autosave-interval';
+    input.min = '5';
+    input.max = '3600';
+    input.value = String(currentAutosave);
+
+    fieldset.append(label, input);
+    content.appendChild(fieldset);
+
+    const dialog = this.createDialog('Settings', content, [
+      { label: 'Cancel', action: () => this.closeDialog(dialog) },
+      {
+        label: 'Save', primary: true,
+        action: () => {
+          this.closeDialog(dialog);
+          onSave({ autosaveInterval: Math.max(5, (parseInt(input.value, 10) || 30)) });
+        },
+      },
+    ]);
+    setTimeout(() => input.focus(), 50);
+  }
+
   showAboutDialog(): void {
     const content = document.createElement('div');
     content.innerHTML = `

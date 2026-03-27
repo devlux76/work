@@ -138,7 +138,10 @@ class App implements AppInterface {
       styleEl.id = 'doc-custom-css';
       document.head.appendChild(styleEl);
     }
-    styleEl.textContent = this.currentDoc?.cssOverrides ?? '';
+    // Scope overrides under #preview-content so they never bleed into app chrome.
+    // CSS nesting (supported in all modern browsers) lets users write full rule blocks.
+    const cssOverrides = this.currentDoc?.cssOverrides?.trim();
+    styleEl.textContent = cssOverrides ? `#preview-content { ${cssOverrides} }` : '';
   }
 
   async newDocument(): Promise<void> {
@@ -380,9 +383,12 @@ class App implements AppInterface {
 
   showFind(): void {
     this.dialogs.showFindReplaceDialog(
-      (term) => { (window as Window & typeof globalThis & { find?: (s: string) => boolean }).find?.(term); },
+      (term) => {
+        if (!term?.trim()) return;
+        (window as Window & typeof globalThis & { find?: (s: string) => boolean }).find?.(term);
+      },
       (find, replace) => {
-        if (!this.currentDoc) return;
+        if (!find?.trim() || !this.currentDoc) return; // guard empty/whitespace find — would corrupt every character
         const newContent = this.currentDoc.content.split(find).join(replace);
         this.editor?.setValue(newContent);
         if (this.currentDoc) this.currentDoc.content = newContent;
@@ -613,11 +619,23 @@ class App implements AppInterface {
   }
 
   setupAutoSave(): void {
+    const raw = parseInt(localStorage.getItem('autosaveInterval') ?? '30', 10);
+    const interval = Math.max(5000, (isNaN(raw) ? 30 : raw) * 1000);
+    this.startAutoSaveTimer(interval);
+  }
+
+  private startAutoSaveTimer(intervalMs: number): void {
+    if (this.autoSaveInterval) clearInterval(this.autoSaveInterval);
     this.autoSaveInterval = setInterval(async () => {
       if (this.state.isDirty && this.currentDoc) {
         await this.saveDocument();
       }
-    }, 30000);
+    }, intervalMs);
+  }
+
+  applySettings(settings: { autosaveInterval: number }): void {
+    localStorage.setItem('autosaveInterval', String(settings.autosaveInterval));
+    this.startAutoSaveTimer(settings.autosaveInterval * 1000);
   }
 
   private formatDate(ts: number): string {

@@ -27,6 +27,18 @@ marked.use(
   })
 );
 
+// Unique per-module token that cannot appear in user content, preventing placeholder
+// collisions when users type text that looks like our marker.
+// Falls back to Math.random-based hex for environments without crypto.randomUUID (non-secure contexts).
+const RENDER_TOKEN = (
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : Array.from({ length: 4 }, () => Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0')).join('-')
+).replace(/-/g, '');
+const BLOCK_PREFIX  = `MATHBLK_${RENDER_TOKEN}_`;
+const INLINE_PREFIX = `MATHINL_${RENDER_TOKEN}_`;
+const PLACEHOLDER_SUFFIX = '_END';
+
 export async function renderMarkdown(content: string): Promise<string> {
   const mathBlocks: string[] = [];
   const mathInlines: string[] = [];
@@ -35,14 +47,14 @@ export async function renderMarkdown(content: string): Promise<string> {
   let processed = content.replace(/\$\$([^$]+?)\$\$/gs, (_match, math: string) => {
     const idx = mathBlocks.length;
     mathBlocks.push(math);
-    return `MATHBLOCK_PLACEHOLDER_${idx}_END`;
+    return `${BLOCK_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`;
   });
 
   // Replace $...$ (inline math)
   processed = processed.replace(/\$([^$\n]+?)\$/g, (_match, math: string) => {
     const idx = mathInlines.length;
     mathInlines.push(math);
-    return `MATHINLINE_PLACEHOLDER_${idx}_END`;
+    return `${INLINE_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`;
   });
 
   // Replace mermaid code blocks before marked processes them
@@ -53,9 +65,14 @@ export async function renderMarkdown(content: string): Promise<string> {
   // Run marked
   let html = await Promise.resolve(marked.parse(processed));
 
-  // Replace math placeholders
-  html = html.replace(/MATHBLOCK_PLACEHOLDER_(\d+)_END/g, (_match, idx: string) => {
-    const math = mathBlocks[parseInt(idx)];
+  // Build escaped-regex from prefix (safe since token contains only hex chars)
+  const blockRe  = new RegExp(`${BLOCK_PREFIX}(\\d+)${PLACEHOLDER_SUFFIX}`, 'g');
+  const inlineRe = new RegExp(`${INLINE_PREFIX}(\\d+)${PLACEHOLDER_SUFFIX}`, 'g');
+
+  // Replace math placeholders — guard against out-of-range indices
+  html = html.replace(blockRe, (match, idx: string) => {
+    const math = mathBlocks[parseInt(idx, 10)];
+    if (math === undefined) return match; // preserve original text if index is unexpected
     try {
       return `<div class="math-block">${katex.renderToString(math, { displayMode: true, throwOnError: false })}</div>`;
     } catch {
@@ -63,8 +80,9 @@ export async function renderMarkdown(content: string): Promise<string> {
     }
   });
 
-  html = html.replace(/MATHINLINE_PLACEHOLDER_(\d+)_END/g, (_match, idx: string) => {
-    const math = mathInlines[parseInt(idx)];
+  html = html.replace(inlineRe, (match, idx: string) => {
+    const math = mathInlines[parseInt(idx, 10)];
+    if (math === undefined) return match; // preserve original text if index is unexpected
     try {
       return katex.renderToString(math, { displayMode: false, throwOnError: false });
     } catch {

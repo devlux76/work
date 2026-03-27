@@ -27,14 +27,18 @@ export interface ToolbarAction {
  * Kept here to avoid importing the full DialogManager and creating a circular dependency.
  */
 export interface DialogManagerLike {
-  insertLinkDialog(): Promise<void>;
-  insertImageDialog(): Promise<void>;
-  insertTableDialog(): Promise<void>;
-  openDocumentDialog(): Promise<void>;
-  showFind(): void;
-  showFindReplace(): void;
-  showWordCount(): void;
-  editDocumentCSS(): void;
+  showNewDocumentDialog(): Promise<string | null>;
+  showOpenDocumentDialog(documents: Document[]): Promise<string | null>;
+  showLinkDialog(selectedText?: string): Promise<{ text: string; url: string } | null>;
+  showImageDialog(): Promise<{ alt: string; url: string } | null>;
+  showTableDialog(): Promise<{ rows: number; cols: number } | null>;
+  showFindReplaceDialog(onFind: (term: string) => void, onReplace: (find: string, replace: string) => void): void;
+  showWordCountDialog(content: string): void;
+  showCSSEditorDialog(css: string, onSave: (css: string) => void): void;
+  showKeyboardShortcutsDialog(): void;
+  showSettingsDialog(onSave: (settings: { autosaveInterval: number }) => void, currentAutosave?: number): void;
+  showAboutDialog(): void;
+  showConfirmDialog(message: string, title?: string): Promise<boolean>;
 }
 
 /** Typed contract for the App class exposed to Toolbar, MenuBar, ShortcutManager. */
@@ -77,4 +81,6 @@ export interface AppInterface {
   showFindReplace(): void;
   showWordCount(): void;
   editDocumentCSS(): void;
+  /** Optional — called by the Settings dialog to apply persisted preferences. */
+  applySettings?(settings: { autosaveInterval: number }): void;
 }

@@ -373,7 +373,7 @@ export class MenuBar {
       case 'clearFormatting':   a.clearFormatting();                      break;
       case 'showWordCount':     a.showWordCount();                        break;
       case 'editDocumentCSS':   a.editDocumentCSS();                      break;
-      case 'showSettings':      a.dialogs.showAboutDialog();              break;
+      case 'showSettings':      a.dialogs.showSettingsDialog((s) => a.applySettings?.(s)); break;
       case 'showShortcuts':     a.dialogs.showKeyboardShortcutsDialog();  break;
       case 'showAbout':         a.dialogs.showAboutDialog();              break;
     }
