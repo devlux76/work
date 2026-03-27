@@ -160,6 +160,7 @@ class App implements AppInterface {
     if (this.state.isDirty && this.currentDoc) {
       const save = await this.dialogs.showConfirmDialog('Save changes before opening?', 'Unsaved Changes');
       if (save) await this.saveDocument();
+      if (!save) return;
     }
     const doc = await this.storage.getDocument(id);
     if (!doc) throw new Error(`Document ${id} not found`);
