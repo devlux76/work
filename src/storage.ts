@@ -98,7 +98,11 @@ export class StorageManager {
     const a = document.createElement('a');
     a.href = url;
     a.download = `${doc.name}.md`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    requestAnimationFrame(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   }
 }
