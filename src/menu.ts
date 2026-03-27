@@ -297,12 +297,39 @@ export class MenuBar {
       case 'closeDocument':     a.closeDocument();                        break;
       case 'editorUndo':        a.editor?.undo();                         break;
       case 'editorRedo':        a.editor?.redo();                         break;
-      case 'execCut':
-        // Prefer modern Clipboard API; execCommand is a deprecated safety net for environments
-        // where clipboard permissions are denied (e.g. embedded iframes without allow-clipboard).
-        navigator.clipboard.writeText(window.getSelection()?.toString() ?? '')
-          .catch(() => { document.execCommand('cut'); });
+      case 'execCut': {
+        const selection = window.getSelection();
+        const text = selection?.toString() ?? '';
+
+        // First, try the legacy cut command which both copies and deletes the selection.
+        try {
+          if (document.execCommand('cut')) {
+            break;
+          }
+        } catch {
+          // Ignore and fall through to Clipboard API fallback.
+        }
+
+        // Fallback: use the Clipboard API, then manually delete the selected content.
+        if (!text || !navigator.clipboard || !navigator.clipboard.writeText) {
+          break;
+        }
+
+        navigator.clipboard.writeText(text).then(() => {
+          const sel = window.getSelection();
+          if (!sel || sel.isCollapsed) return;
+
+          if (sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+          } else if (typeof (sel as any).deleteFromDocument === 'function') {
+            (sel as any).deleteFromDocument();
+          }
+        }).catch(() => {
+          // If Clipboard API fails, there's nothing more we can do here.
+        });
         break;
+      }
       case 'execCopy':
         navigator.clipboard.writeText(window.getSelection()?.toString() ?? '')
           .catch(() => { document.execCommand('copy'); });
