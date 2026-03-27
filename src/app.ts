@@ -251,6 +251,10 @@ class App implements AppInterface {
   async closeDocument(): Promise<void> {
     if (this.state.isDirty && this.currentDoc) {
       const save = await this.dialogs.showConfirmDialog('Save changes before closing?', 'Unsaved Changes');
+      if (save === false) {
+        // User canceled closing; abort close operation.
+        return;
+      }
       if (save) await this.saveDocument();
     }
     this.currentDoc = null;
