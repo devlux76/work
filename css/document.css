@@ -1,0 +1,665 @@
+/* ============================================================
+   Document / Preview Typography
+   ============================================================ */
+
+/* ============================================================
+   Preview Container
+   ============================================================ */
+#preview-content {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #1a202c;
+  max-width: 780px;
+  margin: 0 auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================================================
+   Headings
+   ============================================================ */
+#preview-content h1,
+#preview-content h2,
+#preview-content h3,
+#preview-content h4,
+#preview-content h5,
+#preview-content h6 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.75em;
+  margin-bottom: 0.6em;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+#preview-content h1 {
+  font-size: 2.25em;
+  margin-top: 0;
+  padding-bottom: 0.35em;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+#preview-content h2 {
+  font-size: 1.65em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+#preview-content h3 {
+  font-size: 1.35em;
+}
+
+#preview-content h4 {
+  font-size: 1.15em;
+}
+
+#preview-content h5 {
+  font-size: 1.0em;
+  color: #475569;
+}
+
+#preview-content h6 {
+  font-size: 0.9em;
+  color: #64748b;
+}
+
+/* Anchor links in headings */
+#preview-content h1 a,
+#preview-content h2 a,
+#preview-content h3 a,
+#preview-content h4 a,
+#preview-content h5 a,
+#preview-content h6 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================================
+   Paragraphs
+   ============================================================ */
+#preview-content p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+#preview-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   Links
+   ============================================================ */
+#preview-content a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+#preview-content a:hover {
+  color: #1d4ed8;
+  text-decoration-thickness: 2px;
+}
+
+#preview-content a:visited {
+  color: #7c3aed;
+}
+
+/* ============================================================
+   Strong / Em / Del
+   ============================================================ */
+#preview-content strong,
+#preview-content b {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+#preview-content em,
+#preview-content i {
+  font-style: italic;
+}
+
+#preview-content del,
+#preview-content s {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+#preview-content u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================================
+   Lists
+   ============================================================ */
+#preview-content ul,
+#preview-content ol {
+  margin: 0 0 1em 0;
+  padding-left: 1.75em;
+}
+
+#preview-content ul {
+  list-style-type: disc;
+}
+
+#preview-content ol {
+  list-style-type: decimal;
+}
+
+#preview-content li {
+  margin-bottom: 0.3em;
+  line-height: 1.7;
+}
+
+#preview-content li > p {
+  margin-bottom: 0.5em;
+}
+
+#preview-content li > ul,
+#preview-content li > ol {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+/* Nested lists */
+#preview-content ul ul,
+#preview-content ol ul {
+  list-style-type: circle;
+}
+
+#preview-content ul ul ul,
+#preview-content ol ul ul {
+  list-style-type: square;
+}
+
+/* Task Lists (GitHub-style checkboxes) */
+#preview-content ul.contains-task-list {
+  list-style: none;
+  padding-left: 0.25em;
+}
+
+#preview-content li.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-left: 0;
+}
+
+#preview-content li.task-list-item input[type="checkbox"] {
+  margin-top: 4px;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border: 1.5px solid #94a3b8;
+  background: #ffffff;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: default;
+  flex-shrink: 0;
+  position: relative;
+}
+
+#preview-content li.task-list-item input[type="checkbox"]:checked {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+#preview-content li.task-list-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #ffffff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ============================================================
+   Blockquotes
+   ============================================================ */
+#preview-content blockquote {
+  margin: 1em 0;
+  padding: 12px 16px 12px 20px;
+  border-left: 4px solid #2563eb;
+  background: #f0f7ff;
+  border-radius: 0 8px 8px 0;
+  color: #334155;
+  font-style: italic;
+}
+
+#preview-content blockquote p {
+  margin-bottom: 0.4em;
+}
+
+#preview-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+#preview-content blockquote blockquote {
+  margin: 0.5em 0;
+  border-left-color: #93c5fd;
+}
+
+/* ============================================================
+   Code (Inline)
+   ============================================================ */
+#preview-content code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  font-size: 0.875em;
+  background: #f1f5f9;
+  color: #c0392b;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Code Blocks (Fenced)
+   ============================================================ */
+#preview-content pre {
+  margin: 1em 0;
+  padding: 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#preview-content pre code {
+  display: block;
+  padding: 16px 20px;
+  background: transparent;
+  color: #334155;
+  font-size: 0.875em;
+  line-height: 1.65;
+  border: none;
+  border-radius: 0;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* Scrollbar in code blocks */
+#preview-content pre code::-webkit-scrollbar {
+  height: 4px;
+}
+
+#preview-content pre code::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+/* highlight.js themed blocks inherit hljs styles */
+#preview-content pre .hljs {
+  background: transparent;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+#preview-content table {
+  width: 100%;
+  margin: 1em 0;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+#preview-content thead {
+  background: #f1f5f9;
+}
+
+#preview-content thead th {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 0.9em;
+  text-align: left;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+#preview-content tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 100ms ease;
+}
+
+#preview-content tbody tr:last-child {
+  border-bottom: none;
+}
+
+#preview-content tbody tr:hover {
+  background: #f8fafc;
+}
+
+#preview-content tbody td {
+  padding: 9px 14px;
+  vertical-align: top;
+  color: #1a202c;
+}
+
+#preview-content th:not(:last-child),
+#preview-content td:not(:last-child) {
+  border-right: 1px solid #f1f5f9;
+}
+
+/* ============================================================
+   Horizontal Rule
+   ============================================================ */
+#preview-content hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+  margin: 2em 0;
+}
+
+/* ============================================================
+   Images
+   ============================================================ */
+#preview-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 1em 0;
+}
+
+#preview-content img + em {
+  display: block;
+  text-align: center;
+  font-size: 0.85em;
+  color: #64748b;
+  margin-top: -0.5em;
+  margin-bottom: 1em;
+}
+
+/* ============================================================
+   Definition Lists
+   ============================================================ */
+#preview-content dl {
+  margin: 0 0 1em;
+}
+
+#preview-content dt {
+  font-weight: 600;
+  margin-bottom: 0.2em;
+  color: #0f172a;
+}
+
+#preview-content dd {
+  margin-left: 1.5em;
+  margin-bottom: 0.5em;
+  color: #475569;
+}
+
+/* ============================================================
+   KaTeX Math
+   ============================================================ */
+#preview-content .math-block {
+  margin: 1.5em 0;
+  text-align: center;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+#preview-content .math-block .katex-display {
+  margin: 0;
+}
+
+#preview-content .math-error {
+  color: #dc2626;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875em;
+  background: #fef2f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #fecaca;
+}
+
+/* Inline KaTeX */
+#preview-content .katex {
+  font-size: 1em;
+}
+
+/* ============================================================
+   Mermaid Diagrams
+   ============================================================ */
+#preview-content .mermaid {
+  margin: 1.5em 0;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+#preview-content .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   Abbreviations / Mark
+   ============================================================ */
+#preview-content abbr {
+  cursor: help;
+  text-decoration: underline dotted;
+}
+
+#preview-content mark {
+  background: #fef9c3;
+  color: #713f12;
+  padding: 0.1em 0.25em;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   Superscript / Subscript
+   ============================================================ */
+#preview-content sup,
+#preview-content sub {
+  font-size: 0.75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+#preview-content sup {
+  top: -0.5em;
+}
+
+#preview-content sub {
+  bottom: -0.25em;
+}
+
+/* ============================================================
+   Dark Mode — Document Content
+   ============================================================ */
+[data-theme="dark"] #preview-content {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] #preview-content h1,
+[data-theme="dark"] #preview-content h2,
+[data-theme="dark"] #preview-content h3,
+[data-theme="dark"] #preview-content h4,
+[data-theme="dark"] #preview-content h5,
+[data-theme="dark"] #preview-content h6 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] #preview-content h1,
+[data-theme="dark"] #preview-content h2 {
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] #preview-content strong,
+[data-theme="dark"] #preview-content b {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] #preview-content a {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] #preview-content a:hover {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] #preview-content a:visited {
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] #preview-content del {
+  color: #64748b;
+}
+
+[data-theme="dark"] #preview-content blockquote {
+  background: rgba(37, 99, 235, 0.1);
+  border-left-color: #3b82f6;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] #preview-content code {
+  background: #1e293b;
+  color: #f87171;
+  border-color: #334155;
+}
+
+[data-theme="dark"] #preview-content pre {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] #preview-content pre code {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] #preview-content table {
+  border-color: #334155;
+}
+
+[data-theme="dark"] #preview-content thead {
+  background: #1e293b;
+}
+
+[data-theme="dark"] #preview-content thead th {
+  color: #94a3b8;
+  border-bottom-color: #334155;
+}
+
+[data-theme="dark"] #preview-content tbody tr {
+  border-bottom-color: #1e293b;
+}
+
+[data-theme="dark"] #preview-content tbody tr:hover {
+  background: #1e293b;
+}
+
+[data-theme="dark"] #preview-content tbody td {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] #preview-content th:not(:last-child),
+[data-theme="dark"] #preview-content td:not(:last-child) {
+  border-right-color: #334155;
+}
+
+[data-theme="dark"] #preview-content hr {
+  background: linear-gradient(to right, transparent, #334155, transparent);
+}
+
+[data-theme="dark"] #preview-content .mermaid {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] #preview-content .math-error {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="dark"] #preview-content mark {
+  background: rgba(253, 224, 71, 0.2);
+  color: #fde047;
+}
+
+[data-theme="dark"] #preview-content img {
+  opacity: 0.9;
+}
+
+[data-theme="dark"] #preview-content li.task-list-item input[type="checkbox"] {
+  background: #1e293b;
+  border-color: #475569;
+}
+
+/* ============================================================
+   Print Styles (Document)
+   ============================================================ */
+@media print {
+  #preview-content {
+    max-width: none;
+    padding: 0;
+    font-size: 11pt;
+    color: #000000;
+  }
+
+  #preview-content h1,
+  #preview-content h2,
+  #preview-content h3,
+  #preview-content h4,
+  #preview-content h5,
+  #preview-content h6 {
+    color: #000000;
+    page-break-after: avoid;
+  }
+
+  #preview-content h1 {
+    font-size: 22pt;
+  }
+
+  #preview-content h2 {
+    font-size: 17pt;
+  }
+
+  #preview-content h3 {
+    font-size: 14pt;
+  }
+
+  #preview-content pre,
+  #preview-content blockquote,
+  #preview-content table {
+    page-break-inside: avoid;
+  }
+
+  #preview-content a {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  #preview-content a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555555;
+  }
+
+  #preview-content img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  #preview-content .mermaid {
+    page-break-inside: avoid;
+  }
+}

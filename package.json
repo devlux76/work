@@ -1,0 +1,31 @@
+{
+  "name": "word-processor",
+  "version": "1.0.0",
+  "description": "A modern word processor for markdown and LaTeX",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js --watch"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/lang-markdown": "^6.3.2",
+    "@codemirror/language": "^6.10.8",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.36.4",
+    "@lezer/highlight": "^1.2.1",
+    "codemirror": "^6.0.1",
+    "dompurify": "^3.2.4",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.21",
+    "marked": "^15.0.7",
+    "marked-highlight": "^2.2.1",
+    "mermaid": "^11.4.1"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/katex": "^0.16.7",
+    "esbuild": "^0.25.1",
+    "typescript": "^5.8.2"
+  }
+}
